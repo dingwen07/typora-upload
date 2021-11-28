@@ -43,6 +43,11 @@ mkdir -p $target_path
 
 cd $LOCAL_REPO_PATH
 $GIT_BINARY checkout --quiet $BRANCH_NAME
+unset -v SSH_AUTH_SOCK
+export GIT_SSH_COMMAND="ssh -i $DEPLOY_PRIVATE_KEY -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+$GIT_BINARY fetch --all --quiet
+$GIT_BINARY pull --rebase --no-edit $no_gpg_sign_option --quiet origin $BRANCH_NAME
+
 datetime=$(date +%Y%m%d%H%M%S)
 commit_message_file="/tmp/commit_message_${datetime}.txt"
 echo "Upload Images">>$commit_message_file
@@ -57,10 +62,6 @@ do
     echo "https://raw.githubusercontent.com/${GITHUB_USERNAME}/${GITHUB_REPOSITORY}/${BRANCH_NAME}/${year}/${month}/${file_name}"
 done
 
-unset -v SSH_AUTH_SOCK
-export GIT_SSH_COMMAND="ssh -i $DEPLOY_PRIVATE_KEY -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
-$GIT_BINARY fetch --all --quiet
-$GIT_BINARY pull --quiet
 $GIT_BINARY add --all
 $GIT_BINARY commit --quiet -F $commit_message_file $no_gpg_sign_option
 $GIT_BINARY push origin $BRANCH_NAME --quiet
