@@ -41,6 +41,7 @@ month=$(date +%m)
 target_path="$LOCAL_REPO_PATH/$year/$month"
 mkdir -p $target_path
 
+$GIT_BINARY checkout --quiet $BRANCH_NAME
 datetime=$(date +%Y%m%d%H%M%S)
 commit_message_file="/tmp/commit_message_${datetime}.txt"
 echo "Upload Images">>$commit_message_file
@@ -58,8 +59,8 @@ done
 cd $LOCAL_REPO_PATH
 unset -v SSH_AUTH_SOCK
 export GIT_SSH_COMMAND="ssh -i $DEPLOY_PRIVATE_KEY -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
-$GIT_BINARY checkout --quiet $BRANCH_NAME
-$GIT_BINARY add .
+$GIT_BINARY fetch --all --quiet
+$GIT_BINARY add --all
 $GIT_BINARY commit --quiet -F $commit_message_file $no_gpg_sign_option
 $GIT_BINARY push origin $BRANCH_NAME --quiet
 
