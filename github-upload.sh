@@ -57,6 +57,7 @@ do
     file_extension="${file_base_name##*.}"
     checksum=`$CHECKSUM_BINARY "$file" | awk '{ print $1 }'`
     file_name="${datetime}_${checksum}_${file_base_name}"
+    file_name="${file_name// /_}"
     cp "$file" "$target_path/$file_name"
     echo "- ${file_base_name}">>$commit_message_file
     echo "https://raw.githubusercontent.com/${GITHUB_USERNAME}/${GITHUB_REPOSITORY}/${BRANCH_NAME}/${year}/${month}/${file_name}"
